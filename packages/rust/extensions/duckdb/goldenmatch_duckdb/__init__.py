@@ -29,7 +29,7 @@ Why this block exists: which capabilities are in SQL, which are deliberately
 deferred (PPRL, streaming, LLM, boost/rerank, graph ER), and which fallbacks are
 intentional are all *decisions* -- documented, and not visible from a signature.
 """
-__version__ = "0.4.0"
+__version__ = "0.8.0"
 
 import duckdb
 

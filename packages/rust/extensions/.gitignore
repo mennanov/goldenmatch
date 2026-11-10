@@ -51,6 +51,15 @@ Cargo.lock
 !transforms-core/Cargo.lock
 !fs-core/Cargo.lock
 !fs-wasm/Cargo.lock
+!analysis-core/Cargo.lock
+!analysis-native/Cargo.lock
+!analysis-wasm/Cargo.lock
+!goldengraph-cabi/Cargo.lock
+!goldengraph-native/Cargo.lock
+!goldengraph-wasm/Cargo.lock
+!goldenhnsw/Cargo.lock
+!goldenpipe-wasm/Cargo.lock
+!native-flow/Cargo.lock
 *.so
 *.dylib
 *.dll

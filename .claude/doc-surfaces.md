@@ -127,8 +127,9 @@ All scripts are stdlib-only and anchored to the repo root via `Path(__file__)`.
 
 - **Tier 1 - `scripts/check_docs_consistency.py`** (REQUIRED CI gate). The
   umbrella entry point for STRUCTURAL doc consistency. It (a) runs
-  `check_version_consistency.py` as a subprocess -- the one doc gate no generator
-  owns; (b) **roster matrix** - derives the published-package roster from
+  `check_version_consistency.py` as a subprocess -- the sibling-dependency floor
+  gate (per-package version lockstep itself lives in `blockwatch.toml`, run by
+  the `version_consistency` CI job and the pre-commit hook, not by this script); (b) **roster matrix** - derives the published-package roster from
   the `publish-*.yml` workflows (cross-checked against
   `scripts/suite_download_badges.py`) and asserts each CORE package name appears
   in the root `README.md` and the `docs-site/docs.json` nav; (c) **docs-nav

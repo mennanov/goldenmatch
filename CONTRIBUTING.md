@@ -76,12 +76,17 @@ version, update **every** spot for that package:
 - Don't hardcode the version elsewhere — derive it (e.g.
   `from <pkg> import __version__`) so it can't drift.
 
-CI enforces this with `scripts/check_version_consistency.py`; run it before
-pushing:
+CI enforces this with the rules in `blockwatch.toml`; run them before pushing
+(the pre-commit hook does this for you):
 
 ```bash
-python scripts/check_version_consistency.py
+uvx --from blockwatch-cli==0.18.0 blockwatch
 ```
+
+A new package's `pyproject.toml` or committed `Cargo.lock` must be added to
+`blockwatch.toml` — the `registered-manifests` rule fails until it is.
+`scripts/check_version_consistency.py` separately requires a version floor on
+every dependency on a sibling workspace package.
 
 ## Releasing
 

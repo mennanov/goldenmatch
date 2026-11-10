@@ -3962,9 +3962,11 @@ jobs:
           cargo pgrx install "--pg-config=/usr/lib/postgresql/${PG_VERSION}/bin/pg_config" --release --features "pg${PG_VERSION}" --no-default-features
           # pgrx 0.12.9 doesn't auto-emit the SQL extension file — copy the
           # handwritten ones into PG's extension dir so `CREATE EXTENSION`
-          # (installs default_version, now 0.19.0) and `ALTER EXTENSION ... UPDATE`
+          # (installs default_version, now 0.20.0) and `ALTER EXTENSION ... UPDATE`
           # find them. The schema files are the canonical declaration of public
           # function signatures.
+          cp sql/goldenmatch_pg--0.20.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
+          cp sql/goldenmatch_pg--0.19.0--0.20.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
           cp sql/goldenmatch_pg--0.19.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
           cp sql/goldenmatch_pg--0.18.0--0.19.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
           cp sql/goldenmatch_pg--0.18.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
@@ -3993,6 +3995,7 @@ jobs:
           cp sql/goldenmatch_pg--0.6.0--0.7.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
           cp sql/goldenmatch_pg--0.6.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
           cp sql/goldenmatch_pg--0.5.0--0.6.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
+          cp sql/goldenmatch_pg--0.5.0.sql "/usr/share/postgresql/${PG_VERSION}/extension/"
 
       - name: Expose goldenmatch to Postgres' Python interpreter
         # Postgres runs as user `postgres` under a different Python than the
@@ -4651,10 +4654,12 @@ jobs:
       - run: uv run pyright
 
   # Enforce per-package version lockstep across every file that declares it
-  # (pyproject / __init__ / server.json / Cargo.toml). The CLAUDE.md gotchas
-  # documented this rule but nothing enforced it -- goldenflow shipped 1.1.x
-  # drifted. No `if:` gate: a drift can be introduced by any change and the
-  # check is stdlib-only (~1s), so it always runs.
+  # (pyproject / __init__ / server.json / Cargo.toml / Cargo.lock / package.json
+  # / TS literals), plus the other cross-file invariants in blockwatch.toml. The
+  # CLAUDE.md gotchas documented this rule but nothing enforced it -- goldenflow
+  # shipped 1.1.x drifted. No `if:` gate: a drift can be introduced by any
+  # change. The floor script is stdlib-only (~1s); blockwatch is one prebuilt
+  # wheel from PyPI (pinned) and runs in under a second.
   version_consistency:
     needs: changes
     runs-on: ubuntu-latest
@@ -4664,8 +4669,12 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: "3.12"
-      - name: Enforce per-package version lockstep
+      - name: Enforce workspace-internal dependency floors
         run: python scripts/check_version_consistency.py
+      - name: Install blockwatch
+        run: pip install blockwatch-cli==0.18.0
+      - name: Enforce version lockstep + cross-file invariants (blockwatch.toml)
+        run: blockwatch
       # Same posture and the same reason: stdlib-only, ~1s, and the
       # defect it catches is silent. A bare `x in df.columns` answers
       # False for every field once an Arrow frame reaches the callee,

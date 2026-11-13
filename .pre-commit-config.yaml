@@ -46,6 +46,15 @@ repos:
       # such as the .mcpregistry_* bearer tokens.
       - id: detect-private-key
 
+  - repo: https://github.com/mennanov/blockwatch
+    rev: a7560b50dc804e3100ac2320d10ebf1228a23117  # v0.19.1
+    hooks:
+      # Declarative cross-file and cross-language lockstep invariants in
+      # blockwatch.toml (versions across PyPI/Cargo/npm/dbt/DuckDB/Postgres,
+      # the CI SQL copy list, and cross-language constants). Prebuilt wheel from PyPI (blockwatch-cli); ~0.4s, no Rust
+      # toolchain needed.
+      - id: blockwatch
+
   - repo: local
     hooks:
       # GitHub Actions skips a whole run when the commit message contains

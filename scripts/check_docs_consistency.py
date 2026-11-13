@@ -7,8 +7,10 @@ and exits non-zero on any FAIL so it can gate CI without flaking on clean PRs.
 
 It does the following (see ``.claude/doc-surfaces.md`` for the surface inventory):
 
-1. Runs ``check_version_consistency.py`` as a subprocess -- nothing GENERATES
-   the version lockstep, so a ``--check`` is the only way to run it. (The
+1. Runs ``check_version_consistency.py`` as a subprocess -- the workspace-internal
+   dependency floor gate. Per-package version lockstep is NOT checked here: it
+   lives in ``blockwatch.toml`` and runs in the always-on ``version_consistency``
+   CI job and the pre-commit hook (run ``blockwatch`` locally). (The
    readme-callouts and native-docs subgates that used to live here are gone:
    ``regen_docs.py`` WRITES both, so checking them here asked a human to fix by
    hand what ``make docs`` repairs.)
@@ -22,8 +24,8 @@ It does the following (see ``.claude/doc-surfaces.md`` for the surface inventory
      - every roster package that has a ``docs-site/<pkg>/`` page directory also
        appears in the ``docs-site/docs.json`` navigation.
    (server.json / llms.txt presence is reported, not asserted -- those surfaces
-   only exist for a subset of packages, and version_consistency already gates
-   server.json content.)
+   only exist for a subset of packages, and blockwatch.toml already gates
+   server.json versions.)
 
 3. docs-nav integrity: ``docs.json`` parses; every page referenced in the nav
    resolves to an existing ``.mdx`` under ``docs-site/``; every ``.mdx`` under a
@@ -753,8 +755,8 @@ def main(argv: list[str] | None = None) -> int:
 
     res = Result()
 
-    # version_consistency stays: nothing GENERATES it, so a --check here is the
-    # only way to run it. The readme_callouts and native_docs subgates are gone --
+    # version_consistency stays for the dependency-floor check (the lockstep
+    # half moved to blockwatch.toml, which CI runs unconditionally). The readme_callouts and native_docs subgates are gone --
     # `regen_docs.py` now WRITES both, so a --check for something `make docs`
     # repairs told you to fix by hand what a generator owns. Their CI coverage is
     # unchanged (the standalone `readme_callouts` job plus `docs_regen`).

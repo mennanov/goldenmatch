@@ -1,0 +1,753 @@
+# Declarative cross-file and cross-language invariants enforced by blockwatch.
+# Run locally with `blockwatch` (or via pre-commit); inspect any rule with
+# `blockwatch explain <file>:<block-name>`.
+
+# ============================================================================
+# 1. Python package version lockstep (packages/python/*, dbt, duckdb)
+# ============================================================================
+
+# Every `version` under server.json `packages[]`, however many entries it has.
+[[block]]
+name = 'server-package-versions'
+target = 'packages/python/{goldenanalysis,goldencheck,goldenflow,goldenmatch,goldenpipe,infermap}/server.json#/packages'
+same-as-pattern = '"version":\s*"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldenmatch/pyproject.toml#/project/version'
+same-as = '''
+packages/python/goldenmatch/goldenmatch/__init__.py#/__version__,
+packages/python/goldenmatch/server.json#/version,
+packages/python/goldenmatch/server.json:server-package-versions
+'''
+same-as-mode = 'set'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldencheck/pyproject.toml#/project/version'
+same-as = '''
+packages/python/goldencheck/goldencheck/__init__.py#/__version__,
+packages/python/goldencheck/server.json#/version,
+packages/python/goldencheck/server.json:server-package-versions
+'''
+same-as-mode = 'set'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldenflow/pyproject.toml#/project/version'
+same-as = '''
+packages/python/goldenflow/goldenflow/__init__.py#/__version__,
+packages/python/goldenflow/server.json#/version,
+packages/python/goldenflow/server.json:server-package-versions
+'''
+same-as-mode = 'set'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldenpipe/pyproject.toml#/project/version'
+same-as = '''
+packages/python/goldenpipe/goldenpipe/__init__.py#/__version__,
+packages/python/goldenpipe/server.json#/version,
+packages/python/goldenpipe/server.json:server-package-versions
+'''
+same-as-mode = 'set'
+
+[[block]]
+name = 'version'
+target = 'packages/python/infermap/pyproject.toml#/project/version'
+same-as = '''
+packages/python/infermap/infermap/__init__.py#/__version__,
+packages/python/infermap/server.json#/version,
+packages/python/infermap/server.json:server-package-versions
+'''
+same-as-mode = 'set'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldenanalysis/pyproject.toml#/project/version'
+same-as = '''
+packages/python/goldenanalysis/goldenanalysis/__init__.py#/__version__,
+packages/python/goldenanalysis/server.json#/version,
+packages/python/goldenanalysis/server.json:server-package-versions
+'''
+same-as-mode = 'set'
+
+[[block]]
+name = 'version'
+target = 'packages/python/golden-suite/pyproject.toml#/project/version'
+same-as = 'packages/python/golden-suite/golden_suite/__init__.py#/__version__'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldencheck-types/pyproject.toml#/project/version'
+same-as = 'packages/python/goldencheck-types/goldencheck_types/__init__.py#/__version__'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldengraph/pyproject.toml#/project/version'
+same-as = 'packages/python/goldengraph/goldengraph/__init__.py#/__version__'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldenmatch-kg/pyproject.toml#/project/version'
+same-as = 'packages/python/goldenmatch-kg/goldenmatch_kg/__init__.py#/__version__'
+
+[[block]]
+name = 'version'
+target = 'packages/python/goldensuite-mcp/pyproject.toml#/project/version'
+same-as = 'packages/python/goldensuite-mcp/goldensuite_mcp/__init__.py#/__version__'
+
+[[block]]
+name = 'version'
+target = 'packages/dbt/goldensuite/pyproject.toml#/project/version'
+same-as = '''
+packages/dbt/goldensuite/dbt_project.yml#/version,
+packages/dbt/goldensuite/dbt_goldensuite/__init__.py#/__version__
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/duckdb/pyproject.toml#/project/version'
+same-as = 'packages/rust/extensions/duckdb/goldenmatch_duckdb/__init__.py#/__version__'
+
+# ============================================================================
+# 2. Rust maturin / PyO3 extension version lockstep (packages/rust/extensions/*)
+# ============================================================================
+
+[[block]]
+name = 'fallback-version'
+target = 'packages/rust/extensions/{analysis-native/python/goldenanalysis_native,goldencheck-native/python/goldencheck_native,goldengraph-native/python/goldengraph_native,native/python/goldenmatch_native,native-flow/python/goldenflow_native}/__init__.py'
+same-as-pattern = '__version__\s*=\s*"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/analysis-native/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/analysis-native/pyproject.toml#/project/version,
+packages/rust/extensions/analysis-native/python/goldenanalysis_native/__init__.py:fallback-version,
+packages/rust/extensions/analysis-native/Cargo.lock#/package/~[name=analysis-native]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/embed-py/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/embed-py/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldencheck-native/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldencheck-native/pyproject.toml#/project/version,
+packages/rust/extensions/goldencheck-native/python/goldencheck_native/__init__.py:fallback-version,
+packages/rust/extensions/goldencheck-native/Cargo.lock#/package/~[name=goldencheck-native]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenfuzz-py/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenfuzz-py/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldengraph-native/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldengraph-native/pyproject.toml#/project/version,
+packages/rust/extensions/goldengraph-native/python/goldengraph_native/__init__.py:fallback-version,
+packages/rust/extensions/goldengraph-native/Cargo.lock#/package/~[name=goldengraph-native]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenphonetic-py/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenphonetic-py/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenpipe-native/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenpipe-native/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenprofile-native/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenprofile-native/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/hnsw-py/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/hnsw-py/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/infermap-native/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/infermap-native/pyproject.toml#/project/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/native/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/native/pyproject.toml#/project/version,
+packages/rust/extensions/native/python/goldenmatch_native/__init__.py:fallback-version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-native]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/native-flow/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/native-flow/pyproject.toml#/project/version,
+packages/rust/extensions/native-flow/python/goldenflow_native/__init__.py:fallback-version,
+packages/rust/extensions/native-flow/Cargo.lock#/package/~[name=goldenflow-native]/version
+'''
+
+# goldenmatch-bridge is the one crate with `version.workspace = true`.
+[[block]]
+name = 'workspace-version'
+target = 'packages/rust/extensions/Cargo.toml#/workspace/package/version'
+same-as = 'packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-bridge]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/analysis-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/analysis-core/Cargo.lock#/package/~[name=analysis-core]/version,
+packages/rust/extensions/analysis-native/Cargo.lock#/package/~[name=analysis-core]/version,
+packages/rust/extensions/analysis-wasm/Cargo.lock#/package/~[name=analysis-core]/version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=analysis-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/analysis-wasm/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/analysis-wasm/Cargo.lock#/package/~[name=goldenmatch-analysis-wasm]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/autoconfig-core/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-autoconfig-core]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/cluster-core/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-cluster-core]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/datafusion-udf/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/pyproject.toml#/project/version,
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenmatch-datafusion-udf]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/documents-core/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-documents-core]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/fingerprint-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenmatch-fingerprint-core]/version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-fingerprint-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-fingerprint-core]/version,
+packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenmatch-fingerprint-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/fs-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/fs-core/Cargo.lock#/package/~[name=goldenmatch-fs-core]/version,
+packages/rust/extensions/fs-wasm/Cargo.lock#/package/~[name=goldenmatch-fs-core]/version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-fs-core]/version,
+packages/rust/extensions/score-wasm/Cargo.lock#/package/~[name=goldenmatch-fs-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/fs-wasm/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/fs-wasm/Cargo.lock#/package/~[name=goldenmatch-fs-wasm]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldencheck-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldencheck-native/Cargo.lock#/package/~[name=goldencheck-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldencheck-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenembed-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenembed-core]/version,
+packages/rust/extensions/goldenembed/Cargo.lock#/package/~[name=goldenembed-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenembed-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenembed/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenembed]/version,
+packages/rust/extensions/goldenembed/Cargo.lock#/package/~[name=goldenembed]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenembed]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenflow-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldenflow-wasm/Cargo.lock#/package/~[name=goldenflow-core]/version,
+packages/rust/extensions/native-flow/Cargo.lock#/package/~[name=goldenflow-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenflow-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenflow-wasm/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenflow-wasm/Cargo.lock#/package/~[name=goldenflow-wasm]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenfuzz-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/fs-core/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/fs-wasm/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/goldencheck-native/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/goldengraph-cabi/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/goldengraph-native/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/goldengraph-wasm/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/score-cabi/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/score-core/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/score-wasm/Cargo.lock#/package/~[name=goldenfuzz-core]/version,
+packages/rust/extensions/transforms-core/Cargo.lock#/package/~[name=goldenfuzz-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldengraph-cabi/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldengraph-cabi/Cargo.lock#/package/~[name=goldengraph-cabi]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldengraph-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldengraph-cabi/Cargo.lock#/package/~[name=goldengraph-core]/version,
+packages/rust/extensions/goldengraph-native/Cargo.lock#/package/~[name=goldengraph-core]/version,
+packages/rust/extensions/goldengraph-wasm/Cargo.lock#/package/~[name=goldengraph-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldengraph-wasm/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldengraph-cabi/Cargo.lock#/package/~[name=goldengraph-wasm]/version,
+packages/rust/extensions/goldengraph-wasm/Cargo.lock#/package/~[name=goldengraph-wasm]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenhnsw/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/goldenhnsw/Cargo.lock#/package/~[name=goldenhnsw]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenhnsw]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenphonetic-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenphonetic-core]/version,
+packages/rust/extensions/transforms-core/Cargo.lock#/package/~[name=goldenphonetic-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenpipe-core/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenpipe-wasm/Cargo.lock#/package/~[name=goldenpipe-core]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/goldenpipe-wasm/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/goldenpipe-wasm/Cargo.lock#/package/~[name=goldenpipe-wasm]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/graph-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenmatch-graph-core]/version,
+packages/rust/extensions/goldengraph-cabi/Cargo.lock#/package/~[name=goldenmatch-graph-core]/version,
+packages/rust/extensions/goldengraph-native/Cargo.lock#/package/~[name=goldenmatch-graph-core]/version,
+packages/rust/extensions/goldengraph-wasm/Cargo.lock#/package/~[name=goldenmatch-graph-core]/version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-graph-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-graph-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/key-integrity-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-key-integrity-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-key-integrity-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/perceptual-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-perceptual-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-perceptual-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/score-cabi/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/score-cabi/Cargo.lock#/package/~[name=goldenmatch-score-cabi]/version,
+packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenmatch-score-cabi]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/score-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/datafusion-udf/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/fs-core/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/fs-wasm/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/goldengraph-cabi/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/goldengraph-native/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/goldengraph-wasm/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/score-cabi/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/score-core/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/score-wasm/Cargo.lock#/package/~[name=goldenmatch-score-core]/version,
+packages/rust/extensions/transforms-core/Cargo.lock#/package/~[name=goldenmatch-score-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/score-jni/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenmatch-score-jni]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/score-wasm/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/score-wasm/Cargo.lock#/package/~[name=goldenmatch-score-wasm]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/sketch-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-sketch-core]/version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch-sketch-core]/version
+'''
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/suggest-core/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/native/Cargo.lock#/package/~[name=goldenmatch-suggest-core]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/survivorship-core/Cargo.toml#/package/version'
+same-as = 'packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenmatch-survivorship-core]/version'
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/transforms-core/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/score-jni/Cargo.lock#/package/~[name=goldenmatch-transforms-core]/version,
+packages/rust/extensions/transforms-core/Cargo.lock#/package/~[name=goldenmatch-transforms-core]/version
+'''
+
+# ============================================================================
+# 3. TypeScript package version lockstep (packages/typescript/*)
+# ============================================================================
+#
+# A version literal is `const VERSION = "x.y.z"`, `.version("x.y.z")` or
+# `version: "x.y.z"` (three-part semver only, so MCP `protocolVersion` dates and
+# schema tags never match). Every source file that has one must agree with its
+# package.json; `target-if` skips the files that have none, so a literal added
+# in a NEW file is checked without a new rule.
+
+[[block]]
+name = 'version'
+target = 'packages/typescript/goldenanalysis/package.json#/version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenanalysis/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenanalysis/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+[[block]]
+name = 'version'
+target = 'packages/typescript/goldencheck/package.json#/version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldencheck/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldencheck/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+[[block]]
+name = 'version'
+target = 'packages/typescript/goldenflow/package.json#/version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenflow/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenflow/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+[[block]]
+name = 'version'
+target = 'packages/typescript/goldenmatch/package.json#/version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenmatch/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenmatch/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+[[block]]
+name = 'version'
+target = 'packages/typescript/goldenpipe/package.json#/version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenpipe/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenpipe/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+[[block]]
+name = 'version'
+target = 'packages/typescript/infermap/package.json#/version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/infermap/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/infermap/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+# These packages hardcode no version today. The first literal fails here; move
+# the package to a `src-version` rule above when that happens.
+[[block]]
+name = 'no-version-literal'
+target = 'packages/typescript/{goldencheck-types,goldengraph,goldenmatch-wasm-runtime,goldenprofile}/src/**/*.ts'
+line-pattern-forbidden = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''
+
+# ============================================================================
+# 4. Postgres extension (goldenmatch_pg): version, pgrx pin, CI SQL copy list
+#    (#[pg_extern] <-> base SQL parity stays in scripts/check_pgrx_sql_sync.py:
+#    it follows the attribute and the current default_version, which a
+#    per-line pattern over a fixed file list cannot.)
+# ============================================================================
+
+[[block]]
+name = 'default-version'
+target = 'packages/rust/extensions/postgres/goldenmatch_pg.control'
+target-pattern = "^default_version = '(?P<value>[^']+)'"
+
+[[block]]
+name = 'version'
+target = 'packages/rust/extensions/postgres/Cargo.toml#/package/version'
+same-as = '''
+packages/rust/extensions/postgres/goldenmatch_pg.control:default-version,
+packages/rust/extensions/postgres/Cargo.lock#/package/~[name=goldenmatch_pg]/version
+'''
+
+[[block]]
+name = 'pgrx-pin-ci'
+target = '.github/workflows/ci.yml#/jobs/rust_pgrx/steps/~[name=Install cargo-pgrx]/run'
+same-as-pattern = 'cargo install cargo-pgrx --version "(?P<value>[0-9.]+)"'
+
+[[block]]
+name = 'pgrx-pin-publish'
+target = '.github/workflows/publish-goldenmatch-pg.yml#/jobs/build/steps/~[name=Install cargo-pgrx]/run'
+same-as-pattern = 'cargo install cargo-pgrx --version "(?P<value>[0-9.]+)"'
+
+[[block]]
+name = 'pgrx-pin-docker'
+target = 'packages/rust/extensions/Dockerfile'
+target-pattern = 'cargo install cargo-pgrx --version "(?P<value>[0-9.]+)"'
+
+[[block]]
+name = 'pgrx-pin'
+target = 'packages/rust/extensions/postgres/Cargo.toml#/dependencies/pgrx'
+same-as = '''
+packages/rust/extensions/postgres/Cargo.toml#/dev-dependencies/pgrx-tests,
+.github/workflows/ci.yml:pgrx-pin-ci,
+packages/rust/extensions/Dockerfile:pgrx-pin-docker,
+.github/workflows/publish-goldenmatch-pg.yml:pgrx-pin-publish
+'''
+
+[[block]]
+name = 'pgrx-sql-cp-list'
+target = '.github/workflows/ci.yml#/jobs/rust_pgrx/steps/~[name=Build + install extension]/run'
+same-as-paths = 'packages/rust/extensions/postgres/sql/goldenmatch_pg--*.sql'
+same-as-pattern = 'goldenmatch_pg--(?P<value>[0-9.]+(?:--[0-9.]+)?\.sql)'
+
+# ============================================================================
+# 5. Cross-language constants & config lockstep
+# ============================================================================
+
+[[block]]
+name = 'legal-tokens-py'
+target = 'packages/python/goldenflow/goldenflow/transforms/company.py#/_LEGAL_TOKENS'
+same-as-pattern = '"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'legal-tokens-ts'
+target = 'packages/typescript/goldenflow/src/core/transforms/company.ts#/_LEGAL_TOKENS'
+same-as-pattern = '"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'legal-tokens'
+target = 'packages/rust/extensions/goldenflow-core/src/company.rs#/LEGAL_TOKENS'
+same-as = '''
+packages/python/goldenflow/goldenflow/transforms/company.py:legal-tokens-py,
+packages/typescript/goldenflow/src/core/transforms/company.ts:legal-tokens-ts
+'''
+same-as-mode = 'set'
+same-as-pattern = '"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'tracking-params-py'
+target = 'packages/python/goldenflow/goldenflow/transforms/url.py#/_TRACKING_PARAMS'
+same-as-pattern = '"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'tracking-params-ts'
+target = 'packages/typescript/goldenflow/src/core/transforms/url.ts#/_TRACKING_PARAMS'
+same-as-pattern = '"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'tracking-params'
+target = 'packages/rust/extensions/goldenflow-core/src/url.rs#/TRACKING_PARAMS'
+same-as = '''
+packages/python/goldenflow/goldenflow/transforms/url.py:tracking-params-py,
+packages/typescript/goldenflow/src/core/transforms/url.ts:tracking-params-ts
+'''
+same-as-mode = 'set'
+same-as-pattern = '"(?P<value>[^"]+)"'
+
+[[block]]
+name = 'union-pass-min-nonnull'
+target = 'packages/rust/extensions/autoconfig-core/src/select_blocking.rs#/UNION_PASS_MIN_NONNULL'
+same-as = '''
+packages/python/goldenmatch/goldenmatch/core/blocking_union_core.py#/_UNION_PASS_MIN_NONNULL,
+packages/python/goldenmatch/goldenmatch/core/autoconfig.py#/_UNION_PASS_MIN_NONNULL
+'''
+same-as-format = 'numeric'
+
+[[block]]
+name = 'blocking-union-coverage-target'
+target = 'packages/rust/extensions/autoconfig-core/src/select_blocking.rs#/BLOCKING_UNION_COVERAGE_TARGET'
+same-as = '''
+packages/python/goldenmatch/goldenmatch/core/blocking_union_core.py#/_BLOCKING_UNION_COVERAGE_TARGET,
+packages/python/goldenmatch/goldenmatch/core/autoconfig.py#/_BLOCKING_UNION_COVERAGE_TARGET
+'''
+same-as-format = 'numeric'
+
+[[block]]
+name = 'goldencheck-types-schema-version'
+target = 'packages/python/goldencheck-types/goldencheck_types/types.py#/SCHEMA_VERSION'
+same-as = 'packages/typescript/goldencheck-types/src/types.ts#/SCHEMA_VERSION'
+same-as-format = 'numeric'
+
+[[block]]
+name = 'goldenanalysis-schema-version'
+target = 'packages/python/goldenanalysis/goldenanalysis/history.py#/SCHEMA_VERSION'
+same-as = '''
+packages/typescript/goldenanalysis/src/node/history.ts#/SCHEMA_VERSION,
+packages/typescript/goldenanalysis/src/core/types.ts#/SCHEMA_VERSION
+'''
+same-as-format = 'numeric'
+
+[[block]]
+name = 'em-result-schema-version-py'
+target = 'packages/python/goldenmatch/goldenmatch/core/probabilistic.py#/EMResult'
+same-as-pattern = 'SCHEMA_VERSION = (?P<value>\d+)'
+
+[[block]]
+name = 'em-result-schema-version'
+target = 'packages/typescript/goldenmatch/src/core/probabilistic.ts#/EM_RESULT_SCHEMA_VERSION'
+same-as = 'packages/python/goldenmatch/goldenmatch/core/probabilistic.py:em-result-schema-version-py'
+same-as-format = 'numeric'
+
+[[block]]
+name = 'pyright-slice-filter'
+target = '.github/filters.yml#/pyright_slice'
+same-as-pattern = "'(?P<value>packages/python/goldenmatch/[^'*]+?)(?:/\\*\\*)?'"
+
+[[block]]
+name = 'pyright-slice'
+target = 'pyrightconfig.json#/include'
+same-as = '.github/filters.yml:pyright-slice-filter'
+same-as-pattern = '"(?P<value>packages/python/goldenmatch/[^"]+)"'
+
+[[block]]
+name = 'suite-native-deps'
+target = 'packages/python/golden-suite/pyproject.toml#/project/dependencies'
+same-as-pattern = '"(?P<value>[a-z]+-native)>='
+
+[[block]]
+name = 'suite-native-components'
+target = 'packages/python/golden-suite/golden_suite/__init__.py#/_NATIVE'
+same-as = 'packages/python/golden-suite/pyproject.toml:suite-native-deps'
+same-as-pattern = '"(?P<value>[a-z]+-native)"'
+
+[[block]]
+name = 'analyzer-entrypoints'
+target = 'packages/python/goldenanalysis/pyproject.toml#/project/entry-points/goldenanalysis.analyzers'
+same-as-pattern = '"(?P<name>[a-z_.]+)"\s*=\s*"(?P<module>[a-z_.]+):(?P<cls>[A-Za-z0-9_]+)"'
+
+[[block]]
+name = 'analyzer-fallback'
+target = 'packages/python/goldenanalysis/goldenanalysis/registry.py#/_FALLBACK'
+same-as = 'packages/python/goldenanalysis/pyproject.toml:analyzer-entrypoints'
+same-as-pattern = '"(?P<name>[a-z_.]+)":\s*\("(?P<module>[a-z_.]+)",\s*"(?P<cls>[A-Za-z0-9_]+)"\)'
+
+[[block]]
+name = 'registered-manifests'
+target = 'blockwatch.toml'
+same-as-mode = 'set'
+same-as-paths = 'packages/{python/*/pyproject.toml,dbt/*/pyproject.toml,rust/extensions/*/pyproject.toml,rust/extensions/*/Cargo.lock}'
+same-as-pattern = '(?P<value>packages/(?:(?:python|dbt|rust/extensions)/[a-z0-9_-]+/pyproject\.toml|rust/extensions/[a-z0-9_-]+/Cargo\.lock))(?:#/(?:project/version|package/)|$)'
+
+# ============================================================================
+# 6. blockwatch's own pin (CI, pre-commit, CONTRIBUTING.md)
+# ============================================================================
+
+[[block]]
+name = 'blockwatch-pin-pre-commit'
+target = '.pre-commit-config.yaml'
+target-pattern = '(?s)mennanov/blockwatch\n\s+rev: [0-9a-f]{40}\s+# v(?P<value>[0-9.]+)'
+
+[[block]]
+name = 'blockwatch-pin-contributing'
+target = 'CONTRIBUTING.md'
+target-pattern = 'blockwatch-cli==(?P<value>[0-9.]+)'
+
+[[block]]
+name = 'blockwatch-pin'
+target = '.github/workflows/ci.yml'
+target-pattern = 'pip install blockwatch-cli==(?P<value>[0-9.]+)'
+same-as = '''
+.pre-commit-config.yaml:blockwatch-pin-pre-commit,
+CONTRIBUTING.md:blockwatch-pin-contributing
+'''

@@ -4672,7 +4672,7 @@ jobs:
       - name: Enforce workspace-internal dependency floors
         run: python scripts/check_version_consistency.py
       - name: Install blockwatch
-        run: pip install blockwatch-cli==0.18.0
+        run: pip install blockwatch-cli==0.19.1
       - name: Enforce version lockstep + cross-file invariants (blockwatch.toml)
         run: blockwatch
       # Same posture and the same reason: stdlib-only, ~1s, and the

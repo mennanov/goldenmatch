@@ -2,9 +2,6 @@
 # Run locally with `blockwatch` (or via pre-commit); inspect any rule with
 # `blockwatch explain <file>:<block-name>`.
 
-[extensions]
-lock = 'toml'
-
 # ============================================================================
 # 1. Python package version lockstep (packages/python/*, dbt, duckdb)
 # ============================================================================
@@ -473,83 +470,85 @@ packages/rust/extensions/transforms-core/Cargo.lock#/package/~[name=goldenmatch-
 # ============================================================================
 # 3. TypeScript package version lockstep (packages/typescript/*)
 # ============================================================================
-
-[[block]]
-name = 'mcp-version'
-target = 'packages/typescript/{goldenanalysis,goldencheck,goldenflow,goldenmatch,goldenpipe,infermap}/src/node/mcp/server.ts#/startMcpServer'
-same-as-pattern = 'serverInfo:\s*\{\s*name:\s*"[^"]+",\s*version:\s*"(?P<value>[^"]+)"'
-
-[[block]]
-name = 'mcp-tool-version'
-target = 'packages/typescript/goldenmatch/src/node/mcp/server.ts#/handleTool'
-same-as-pattern = 'version:\s*"(?P<value>[^"]+)"'
-
-[[block]]
-name = 'a2a-version'
-target = 'packages/typescript/{goldencheck,goldenflow,goldenmatch,goldenpipe}/src/node/a2a/server.ts#/AGENT_CARD'
-same-as-pattern = 'version:\s*"(?P<value>[^"]+)"'
+#
+# A version literal is `const VERSION = "x.y.z"`, `.version("x.y.z")` or
+# `version: "x.y.z"` (three-part semver only, so MCP `protocolVersion` dates and
+# schema tags never match). Every source file that has one must agree with its
+# package.json; `target-if` skips the files that have none, so a literal added
+# in a NEW file is checked without a new rule.
 
 [[block]]
 name = 'version'
 target = 'packages/typescript/goldenanalysis/package.json#/version'
-same-as = '''
-packages/typescript/goldenanalysis/src/index.ts#/VERSION,
-packages/typescript/goldenanalysis/src/node/mcp/server.ts:mcp-version
-'''
 
 [[block]]
-name = 'cli-version'
-target = 'packages/typescript/goldencheck/src/cli.ts'
-same-as-pattern = '\.version\("(?P<value>[^"]+)"\)'
-
-[[block]]
-name = 'notifier-version'
-target = 'packages/typescript/goldencheck/src/core/engine/notifier.ts#/sendWebhook'
-same-as-pattern = 'version:\s*"(?P<value>[^"]+)"'
+name = 'src-version'
+target = 'packages/typescript/goldenanalysis/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenanalysis/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
 
 [[block]]
 name = 'version'
 target = 'packages/typescript/goldencheck/package.json#/version'
-same-as = '''
-packages/typescript/goldencheck/src/cli.ts:cli-version,
-packages/typescript/goldencheck/src/core/engine/notifier.ts:notifier-version,
-packages/typescript/goldencheck/src/node/a2a/server.ts:a2a-version,
-packages/typescript/goldencheck/src/node/mcp/server.ts:mcp-version
-'''
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldencheck/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldencheck/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
 
 [[block]]
 name = 'version'
 target = 'packages/typescript/goldenflow/package.json#/version'
-same-as = '''
-packages/typescript/goldenflow/src/cli.ts#/VERSION,
-packages/typescript/goldenflow/src/node/api/server.ts#/VERSION,
-packages/typescript/goldenflow/src/node/a2a/server.ts:a2a-version,
-packages/typescript/goldenflow/src/node/mcp/server.ts:mcp-version
-'''
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenflow/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenflow/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
 
 [[block]]
 name = 'version'
 target = 'packages/typescript/goldenmatch/package.json#/version'
-same-as = '''
-packages/typescript/goldenmatch/src/node/a2a/server.ts:a2a-version,
-packages/typescript/goldenmatch/src/node/mcp/server.ts:mcp-version,
-packages/typescript/goldenmatch/src/node/mcp/server.ts:mcp-tool-version
-'''
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenmatch/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenmatch/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
 
 [[block]]
 name = 'version'
 target = 'packages/typescript/goldenpipe/package.json#/version'
-same-as = '''
-packages/typescript/goldenpipe/src/cli.ts#/VERSION,
-packages/typescript/goldenpipe/src/node/api/server.ts#/VERSION,
-packages/typescript/goldenpipe/src/node/a2a/server.ts:a2a-version,
-packages/typescript/goldenpipe/src/node/mcp/server.ts:mcp-version
-'''
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/goldenpipe/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/goldenpipe/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
 
 [[block]]
 name = 'version'
 target = 'packages/typescript/infermap/package.json#/version'
-same-as = 'packages/typescript/infermap/src/node/mcp/server.ts:mcp-version'
+
+[[block]]
+name = 'src-version'
+target = 'packages/typescript/infermap/src/**/*.ts'
+target-if = { patterns = ['''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''] }
+same-as = 'packages/typescript/infermap/package.json:version'
+same-as-pattern = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["'](?P<value>\d+\.\d+\.\d+)["']'''
+
+# These packages hardcode no version today. The first literal fails here; move
+# the package to a `src-version` rule above when that happens.
+[[block]]
+name = 'no-version-literal'
+target = 'packages/typescript/{goldencheck-types,goldengraph,goldenmatch-wasm-runtime,goldenprofile}/src/**/*.ts'
+line-pattern-forbidden = '''(?:(?:export[ \t]+)?const[ \t]+VERSION[ \t]*=[ \t]*|\.version\([ \t]*|\bversion:[ \t]*)["']\d+\.\d+\.\d+["']'''
 
 # ============================================================================
 # 4. Postgres extension (goldenmatch_pg): version, pgrx pin, CI SQL copy list
@@ -582,11 +581,17 @@ target = '.github/workflows/publish-goldenmatch-pg.yml#/jobs/build/steps/~[name=
 same-as-pattern = 'cargo install cargo-pgrx --version "(?P<value>[0-9.]+)"'
 
 [[block]]
+name = 'pgrx-pin-docker'
+target = 'packages/rust/extensions/Dockerfile'
+target-pattern = 'cargo install cargo-pgrx --version "(?P<value>[0-9.]+)"'
+
+[[block]]
 name = 'pgrx-pin'
 target = 'packages/rust/extensions/postgres/Cargo.toml#/dependencies/pgrx'
 same-as = '''
 packages/rust/extensions/postgres/Cargo.toml#/dev-dependencies/pgrx-tests,
 .github/workflows/ci.yml:pgrx-pin-ci,
+packages/rust/extensions/Dockerfile:pgrx-pin-docker,
 .github/workflows/publish-goldenmatch-pg.yml:pgrx-pin-publish
 '''
 
@@ -723,3 +728,26 @@ target = 'blockwatch.toml'
 same-as-mode = 'set'
 same-as-paths = 'packages/{python/*/pyproject.toml,dbt/*/pyproject.toml,rust/extensions/*/pyproject.toml,rust/extensions/*/Cargo.lock}'
 same-as-pattern = '(?P<value>packages/(?:(?:python|dbt|rust/extensions)/[a-z0-9_-]+/pyproject\.toml|rust/extensions/[a-z0-9_-]+/Cargo\.lock))(?:#/(?:project/version|package/)|$)'
+
+# ============================================================================
+# 6. blockwatch's own pin (CI, pre-commit, CONTRIBUTING.md)
+# ============================================================================
+
+[[block]]
+name = 'blockwatch-pin-pre-commit'
+target = '.pre-commit-config.yaml'
+target-pattern = '(?s)mennanov/blockwatch\n\s+rev: [0-9a-f]{40}\s+# v(?P<value>[0-9.]+)'
+
+[[block]]
+name = 'blockwatch-pin-contributing'
+target = 'CONTRIBUTING.md'
+target-pattern = 'blockwatch-cli==(?P<value>[0-9.]+)'
+
+[[block]]
+name = 'blockwatch-pin'
+target = '.github/workflows/ci.yml'
+target-pattern = 'pip install blockwatch-cli==(?P<value>[0-9.]+)'
+same-as = '''
+.pre-commit-config.yaml:blockwatch-pin-pre-commit,
+CONTRIBUTING.md:blockwatch-pin-contributing
+'''

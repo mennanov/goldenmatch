@@ -80,7 +80,7 @@ CI enforces this with the rules in `blockwatch.toml`; run them before pushing
 (the pre-commit hook does this for you):
 
 ```bash
-uvx --from blockwatch-cli==0.18.0 blockwatch
+uvx --from blockwatch-cli==0.19.1 blockwatch
 ```
 
 A new package's `pyproject.toml` or committed `Cargo.lock` must be added to

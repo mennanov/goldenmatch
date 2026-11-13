@@ -47,7 +47,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/mennanov/blockwatch
-    rev: d9fee1f9be40a57628dfa13514430309f644be03  # v0.18.0
+    rev: a7560b50dc804e3100ac2320d10ebf1228a23117  # v0.19.1
     hooks:
       # Declarative cross-file and cross-language lockstep invariants in
       # blockwatch.toml (versions across PyPI/Cargo/npm/dbt/DuckDB/Postgres,
